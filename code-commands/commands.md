@@ -103,6 +103,42 @@ index.html
 
 ---
 
+## 6. `minikube image build -t static-website:v1 .`
+
+### What it does:
+Builds a Docker container image directly inside Minikube's internal container storage.
+
+### Explanation:
+- **`minikube image build`**: Reads the `Dockerfile` in the specified directory and builds the image inside the Minikube environment. This avoids needing to push the image to an external registry like Docker Hub.
+- **`-t static-website:v1`**: Tags the image with a name (`static-website`) and version tag (`v1`).
+- **`.`**: Refers to the current directory (the build context) where the `Dockerfile` and `website/` folder are located.
+
+### What happened in your terminal:
+1. Minikube loaded the build context and `Dockerfile`.
+2. Pulled the base `nginx:alpine` image.
+3. Executed `COPY website/ /usr/share/nginx/html/` to copy your HTML files into Nginx.
+4. Exported and named the image `docker.io/library/static-website:v1` locally inside the cluster.
+
+---
+
+## 7. `minikube image ls | grep static-website`
+
+### What it does:
+Checks and verifies that your built image is available in Minikube's local image registry.
+
+### Explanation:
+- **`minikube image ls`**: Lists all container images stored locally inside Minikube.
+- **`|` (Pipe)**: Sends the output of `minikube image ls` directly as input to `grep`.
+- **`grep static-website`**: Filters the list and prints only lines matching `static-website`.
+
+### What happened in your terminal:
+```text
+docker.io/library/static-website:v1
+```
+This confirms that Kubernetes can find and run your website container locally without looking up Docker Hub.
+
+---
+
 ## Quick Reference Summary
 
 | Command | Simple Meaning |
@@ -112,3 +148,5 @@ index.html
 | `kubectl get nodes` | "Show me the servers/nodes running in this cluster" |
 | `kubectl get pods -A` | "Show me all containers/pods running everywhere in the cluster" |
 | `ls -R` | "List all files and subfolders recursively (show project tree)" |
+| `minikube image build -t static-website:v1 .` | "Build Docker image directly inside Minikube from current folder" |
+| `minikube image ls \| grep static-website` | "Check if my website image exists in Minikube's image list" |

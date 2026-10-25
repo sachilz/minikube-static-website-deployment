@@ -77,6 +77,32 @@ All these pods run under the **`kube-system`** namespace to keep Kubernetes func
 
 ---
 
+## 5. `ls -R`
+
+### What it does:
+Recursively lists all files and folders in the current directory and all subdirectories.
+
+### Explanation:
+- **`ls`**: Lists the files and folders inside the directory you are currently in.
+- **`-R` (Recursive)**: Tells the command to look inside every subfolder, and inside subfolders of those subfolders, giving you the complete directory tree structure.
+
+### Why it is useful in this project:
+It allows you to quickly verify that all your project assets (such as `website/index.html`, Dockerfiles, or documentation files) are placed in their proper folders before building and deploying.
+
+Example output:
+```text
+.:
+code-commands  README.md  website
+
+./code-commands:
+commands.md
+
+./website:
+index.html
+```
+
+---
+
 ## Quick Reference Summary
 
 | Command | Simple Meaning |
@@ -85,3 +111,4 @@ All these pods run under the **`kube-system`** namespace to keep Kubernetes func
 | `minikube status` | "Is my cluster up and healthy?" |
 | `kubectl get nodes` | "Show me the servers/nodes running in this cluster" |
 | `kubectl get pods -A` | "Show me all containers/pods running everywhere in the cluster" |
+| `ls -R` | "List all files and subfolders recursively (show project tree)" |

@@ -184,6 +184,99 @@ Nginx responded with the full HTML source code of your `website/index.html` file
 
 ---
 
+## 11. `kubectl apply -f k8s/deployment.yaml`
+
+### What it does:
+Creates or updates the Deployment resource in Kubernetes using the configuration file.
+
+### Explanation:
+- **`kubectl apply`**: Declarative command that tells Kubernetes to configure the cluster to match the state defined in your YAML file.
+- **`-f k8s/deployment.yaml`**: Specifies the file path (`-f` = filename) containing the manifest.
+
+### What happened in your terminal:
+```text
+deployment.apps/static-website created
+```
+Kubernetes read the deployment blueprint, found the local `static-website:v1` image, and scheduled 2 replica Pods to run.
+
+---
+
+## 12. `kubectl apply -f k8s/service.yaml`
+
+### What it does:
+Creates or updates the Service resource in Kubernetes to expose your website pods.
+
+### Explanation:
+- **`-f k8s/service.yaml`**: Points to your Service manifest file.
+
+### What happened in your terminal:
+```text
+service/static-website-service created
+```
+Kubernetes created a NodePort Service that routes incoming traffic to any Pod with the label `app: static-website`.
+
+---
+
+## 13. `kubectl get deployments`
+
+### What it does:
+Checks the deployment's operational status and replica health.
+
+### Explanation of output columns:
+- **`NAME` (`static-website`)**: The deployment identifier.
+- **`READY` (`2/2`)**: Shows how many pod replicas are running and healthy out of the desired count (2 out of 2).
+- **`UP-TO-DATE` (`2`)**: How many pods have been updated to the latest configured image.
+- **`AVAILABLE` (`2`)**: How many pods are ready to serve incoming user traffic.
+- **`AGE`**: Time elapsed since the deployment was created.
+
+---
+
+## 14. `kubectl get pods -o wide`
+
+### What it does:
+Lists the running pods with extra details including internal IP addresses and node placement.
+
+### Explanation:
+- **`-o wide`**: Tells kubectl to output additional columns beyond the standard view.
+
+### Key columns explained:
+- **`IP` (`10.244.0.4`, `10.244.0.5`)**: The internal cluster IP address assigned to each individual Pod.
+- **`NODE` (`minikube`)**: The node (server) hosting that Pod.
+- **`READINESS GATES`**: Extra conditions required before the Pod is marked ready (none required for static Nginx).
+
+---
+
+## 15. `kubectl get services`
+
+### What it does:
+Lists all active network services in the current namespace and displays their port mappings.
+
+### Key columns explained:
+- **`NAME` (`static-website-service`)**: The service name and internal DNS entry.
+- **`TYPE` (`NodePort`)**: The service exposure type.
+- **`CLUSTER-IP` (`10.104.117.163`)**: The internal virtual IP assigned to the service inside the cluster.
+- **`PORT(S)` (`80:30080/TCP`)**:
+  - `80`: Internal service port.
+  - `30080`: External NodePort opened on the Minikube node.
+
+---
+
+## 16. `minikube service static-website-service --url`
+
+### What it does:
+Creates a direct network tunnel from your local computer into Minikube and outputs the URL you can open in your web browser.
+
+### Explanation:
+- **`--url`**: Returns only the accessible HTTP URL (e.g., `http://127.0.0.1:44901`) instead of attempting to automatically open your default desktop browser.
+
+### Why the terminal note appears:
+```text
+❗ Because you are using a Docker driver on linux, the terminal needs to be open to run it.
+```
+When running Minikube with the Docker driver inside WSL/Linux, container networking is isolated. Minikube starts a dynamic background port forward/tunnel process to bridge your local machine to the container. If you press `Ctrl + C`, the tunnel closes and the temporary port stops forwarding.
+
+---
+
 ## Quick Reference Summary
 
 | Command | Simple Meaning |
@@ -198,3 +291,9 @@ Nginx responded with the full HTML source code of your `website/index.html` file
 | `docker build -t static-website:test .` | "Build Docker image on host machine for local testing" |
 | `docker run --rm -d --name static-website-test -p 8081:80 static-website:test` | "Run test container in background on port 8081 with auto-cleanup" |
 | `curl http://localhost:8081` | "Send HTTP request to test container and check the HTML response" |
+| `kubectl apply -f k8s/deployment.yaml` | "Create or update the website Deployment (2 pods) in Kubernetes" |
+| `kubectl apply -f k8s/service.yaml` | "Create or update the NodePort Service to route traffic to the pods" |
+| `kubectl get deployments` | "Check if deployment is healthy and all replicas (2/2) are ready" |
+| `kubectl get pods -o wide` | "List pods with extra info (internal IPs and hosting node)" |
+| `kubectl get services` | "List all services and check cluster IPs and port mappings" |
+| `minikube service static-website-service --url` | "Generate the accessible browser URL to open the website" |
